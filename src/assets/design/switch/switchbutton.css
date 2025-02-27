@@ -1,0 +1,50 @@
+.switchbutton-outline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70px;
+    height: 25px;
+}
+
+.switchbutton {
+    display: flex;
+    align-items: center;
+    width: 50px;
+    height: 25px;
+    border-radius: 30px;
+    background-color: #ffffff;
+    position: relative;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    border-color: #21b899;
+    border-width: 2px;
+    box-shadow: 0 0 2px #16806a;
+}
+
+.switchbutton-slide {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background-color: #1bc09f;
+    position: absolute;
+    left: 2px;
+    transition: left 0.3s ease, box-shadow 0.3s ease;
+    border-color: #1bc09f;
+    border-width: 3px;
+}
+
+/* .switchbutton.active {
+    background-color: #000000;
+    box-shadow: 0 0 10px rgba(51, 204, 153, 0.6), 0 0 20px rgba(51, 204, 153, 0.3);
+} */
+
+.switchbutton.active {
+    background-color: #1bc09f;
+    /* box-shadow: 0 0 10px rgba(74, 238, 183, 0.6), 0 0 20px rgba(81, 240, 187, 0.3); */
+}
+
+.switchbutton.active .switchbutton-slide {
+    left: 27px;
+    background-color: #ffffff;
+    border-color: #fff;
+}
