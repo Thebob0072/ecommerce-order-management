@@ -24,7 +24,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#f0f8ff]">
       <div className="container mx-auto px-4 py-10">
         <div className="text-center">
-          <h1 className="text-4xl font-semibold text-[#007bff]">{greeting}, Welcome to Your Dashboard</h1>
+          <h1 className="text-4xl font-semibold text-[#007bff]">{greeting}, APlus</h1>
           <p className="text-lg mt-4 text-gray-600">Your e-commerce management portal</p>
         </div>
 
