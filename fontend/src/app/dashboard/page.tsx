@@ -6,26 +6,25 @@ import { FaShoppingCart, FaWarehouse, FaRegChartBar, FaBox, FaDollarSign } from 
 import { IoPeople } from "react-icons/io5";
 import Link from "next/link";
 import Image from "next/image";
-import supabase from "@/lib/supabase";
 
 export default function Dashboard() {
   const router = useRouter();
   const [greeting, setGreeting] = useState("");
   const [user, setUser] = useState<any>(null);
 
-  // เช็คว่าเข้าสู่ระบบหรือไม่
+  // ✅ เช็คว่าผู้ใช้ล็อกอินอยู่หรือไม่ (ใช้ localStorage)
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) {
-        router.push("/signin"); // ถ้าไม่ได้ล็อกอินให้ไปหน้า Signin
-      } else {
-        setUser(data.user); // ดึงข้อมูลผู้ใช้
-      }
-    };
-    fetchUser();
+    const storedUser = localStorage.getItem("user");
+
+    if (!storedUser) {
+      router.push("/signin"); // ถ้าไม่มี session ให้กลับไปที่หน้า Login
+    } else {
+      console.log("✅ ดึงข้อมูลจาก LocalStorage:", storedUser);
+      setUser(JSON.parse(storedUser));
+    }
   }, [router]);
 
+  // ✅ ตั้งค่าทักทายตามช่วงเวลา
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
@@ -37,10 +36,11 @@ export default function Dashboard() {
     }
   }, []);
 
-  // ฟังก์ชันออกจากระบบ
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/signin"); // กลับไปหน้า Signin
+  // ✅ ฟังก์ชันออกจากระบบ
+  const handleSignOut = () => {
+    localStorage.removeItem("user"); // ❌ ลบ session ออกจาก localStorage
+    setUser(null);
+    router.push("/signin"); // กลับไปหน้า Login
   };
 
   return (
@@ -50,10 +50,13 @@ export default function Dashboard() {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-semibold text-[#007bff]">
-            {greeting}, {user ? user.email : "กำลังโหลด..."}
+            {greeting}, {user ? user.full_name : "กำลังโหลด..."}
           </h1>
           <p className="text-lg mt-2 text-gray-600">จัดการร้านค้าออนไลน์ของคุณได้ง่าย ๆ</p>
-          <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700">
+          <button 
+            onClick={handleSignOut} 
+            className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
+          >
             ออกจากระบบ
           </button>
         </div>
@@ -92,14 +95,14 @@ export default function Dashboard() {
         {/* Graph Section */}
         <h2 className="text-2xl font-semibold text-[#007bff] mt-10">วิเคราะห์ยอดขาย</h2>
         <div className="bg-white shadow-md rounded-lg p-6 mt-6">
-          <Image src="/sales-chart.png" width={900} height={500} alt="Sales Chart" />
+          <Image src="/sales-chart.png" width={900} height={500} alt="Sales Chart" priority />
         </div>
       </div>
     </div>
   );
 }
 
-// Summary Card Component
+// ✅ Component: Summary Card
 function SummaryCard({ title, value, icon }) {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex items-center justify-between hover:shadow-lg transition">
@@ -112,7 +115,7 @@ function SummaryCard({ title, value, icon }) {
   );
 }
 
-// Quick Action Card Component
+// ✅ Component: Quick Action Card
 function QuickActionCard({ title, desc, link, icon }) {
   return (
     <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -120,7 +123,9 @@ function QuickActionCard({ title, desc, link, icon }) {
       <h3 className="mt-4 text-xl font-semibold">{title}</h3>
       <p className="text-sm text-gray-500 mt-2">{desc}</p>
       <Link href={link}>
-        <Button className="mt-4 bg-[#007bff] text-white hover:bg-[#0056b3]" size="lg">เข้าใช้งาน</Button>
+        <Button className="mt-4 bg-[#007bff] text-white hover:bg-[#0056b3]" size="lg">
+          เข้าใช้งาน
+        </Button>
       </Link>
     </div>
   );
