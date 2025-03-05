@@ -2,31 +2,30 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { FaShoppingCart, FaWarehouse, FaChartLine, FaBox, FaDollarSign } from "react-icons/fa";
+import { FaShoppingCart, FaWarehouse, FaRegChartBar, FaBox, FaDollarSign } from "react-icons/fa";
 import { IoPeople } from "react-icons/io5";
 import Link from "next/link";
 import Image from "next/image";
 import supabase from "@/lib/supabase";
 
-export default function Home() {
+export default function Dashboard() {
   const router = useRouter();
   const [greeting, setGreeting] = useState("");
   const [user, setUser] = useState<any>(null);
 
-  // ตรวจสอบว่าผู้ใช้ล็อกอินหรือไม่
+  // เช็คว่าเข้าสู่ระบบหรือไม่
   useEffect(() => {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data.user) {
-        router.push("/signin"); // ถ้าไม่ได้ล็อกอินให้ไปที่หน้า Signin
+        router.push("/signin"); // ถ้าไม่ได้ล็อกอินให้ไปหน้า Signin
       } else {
-        setUser(data.user);
+        setUser(data.user); // ดึงข้อมูลผู้ใช้
       }
     };
     fetchUser();
   }, [router]);
 
-  // ตั้งค่าข้อความทักทายตามเวลา
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
@@ -38,8 +37,14 @@ export default function Home() {
     }
   }, []);
 
+  // ฟังก์ชันออกจากระบบ
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/signin"); // กลับไปหน้า Signin
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-[#f0f8ff] p-6">
       <div className="container mx-auto px-6 py-8">
         
         {/* Header */}
@@ -48,11 +53,9 @@ export default function Home() {
             {greeting}, {user ? user.email : "กำลังโหลด..."}
           </h1>
           <p className="text-lg mt-2 text-gray-600">จัดการร้านค้าออนไลน์ของคุณได้ง่าย ๆ</p>
-        </div>
-
-        {/* Banner */}
-        <div className="mt-6 flex justify-center">
-          <Image src="/hero-banner.png" width={900} height={400} alt="Hero Banner" className="rounded-lg shadow-lg" />
+          <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700">
+            ออกจากระบบ
+          </button>
         </div>
 
         {/* Summary Cards */}
@@ -82,7 +85,7 @@ export default function Home() {
             title="รายงานยอดขาย" 
             desc="ดูสถิติและรายงานการขาย" 
             link="/reports" 
-            icon={<FaChartLine size={40} color="#007bff" />}
+            icon={<FaRegChartBar size={40} color="#007bff" />}
           />
         </div>
 
@@ -90,11 +93,6 @@ export default function Home() {
         <h2 className="text-2xl font-semibold text-[#007bff] mt-10">วิเคราะห์ยอดขาย</h2>
         <div className="bg-white shadow-md rounded-lg p-6 mt-6">
           <Image src="/sales-chart.png" width={900} height={500} alt="Sales Chart" />
-        </div>
-
-        {/* Footer */}
-        <div className="text-center text-gray-500 mt-10">
-          <p>© 2024 APlus E-Commerce Management. All Rights Reserved.</p>
         </div>
       </div>
     </div>
