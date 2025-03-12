@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { useCookies } from 'react-cookie';
-import MainMenu from '@/app/mainMenu';
+import MainMenu from '@/components/mainMenu';
 import { RootState, useAppSelector } from "@/store/store";
 import "@/app/globals.css";
 

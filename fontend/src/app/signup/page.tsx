@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { FaUser, FaLock, FaEnvelope, FaPhone, FaMapMarkerAlt, FaGlobe } from "react-icons/fa";
 import Image from "next/image";
+import supabase from "@/utils/supabaseClient"; // ✅ ใช้ Supabase
+import InputField from "@/components/InputField";
 
 export default function SignUp() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
     full_name: "",
     phone: "",
     address: "",
@@ -25,28 +26,26 @@ export default function SignUp() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("รหัสผ่านไม่ตรงกัน");
-      return;
-    }
-
     try {
-      console.log("📤 ส่งข้อมูลไป Backend:", formData);
+      console.log("📤 ส่งข้อมูลไป Supabase:", formData);
 
-      const response = await fetch("http://localhost:5000/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.full_name,
+            phone: formData.phone,
+            address: formData.address,
+            country: formData.country,
+          },
+        },
       });
 
-      const result = await response.json();
-      console.log("📥 ตอบกลับจาก Backend:", result);
+      if (error) throw error;
 
-      if (!response.ok) {
-        throw new Error(result.message || "สมัครสมาชิกไม่สำเร็จ");
-      }
-
-      router.push("/signin"); // 🔹 ส่งไปหน้าเข้าสู่ระบบ
+      console.log("✅ สมัครสมาชิกสำเร็จ:", data);
+      router.push("/signin");
     } catch (err: any) {
       setError(err.message);
     }
@@ -60,7 +59,6 @@ export default function SignUp() {
         </div>
 
         <h2 className="text-3xl font-semibold text-gray-700">สมัครสมาชิก</h2>
-        <p className="text-gray-500 text-sm mb-6">สร้างบัญชีเพื่อจัดการร้านค้าออนไลน์ของคุณ</p>
 
         <form onSubmit={handleSignUp} className="space-y-5">
           <InputField icon={<FaEnvelope />} type="email" name="email" placeholder="อีเมล" value={formData.email} onChange={handleChange} />
@@ -69,7 +67,6 @@ export default function SignUp() {
           <InputField icon={<FaMapMarkerAlt />} type="text" name="address" placeholder="ที่อยู่" value={formData.address} onChange={handleChange} />
           <InputField icon={<FaGlobe />} type="text" name="country" placeholder="ประเทศ" value={formData.country} onChange={handleChange} />
           <InputField icon={<FaLock />} type="password" name="password" placeholder="รหัสผ่าน" value={formData.password} onChange={handleChange} />
-          <InputField icon={<FaLock />} type="password" name="confirmPassword" placeholder="ยืนยันรหัสผ่าน" value={formData.confirmPassword} onChange={handleChange} />
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -86,19 +83,3 @@ export default function SignUp() {
   );
 }
 
-function InputField({ icon, type, name, placeholder, value, onChange }) {
-  return (
-    <div className="relative">
-      <div className="absolute left-4 top-3 text-gray-500">{icon}</div>
-      <input
-        type={type}
-        name={name}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        required
-        className="w-full px-12 py-3 border border-gray-300 rounded-lg text-gray-500 focus:text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#007bff] transition shadow-sm"
-      />
-    </div>
-  );
-}

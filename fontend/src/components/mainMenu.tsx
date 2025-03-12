@@ -61,7 +61,7 @@ export default function MainMenu() {
           {/* Main Menu */}
           <ul className="space-y-4 mt-8">
             <MenuItem href="/" icon={<FaHome size={22} />} label="หน้าหลัก" />
-            <MenuItem href="/sale/booking" icon={<IoDocumentSharp size={22} />} label="เอกสารขาย" />
+            <MenuItem href="/order" icon={<IoDocumentSharp size={22} />} label="เอกสารขาย" />
             <MenuItem href="/purchase/order-request" icon={<FaShoppingCart size={22} />} label="เอกสารซื้อ" />
             <MenuItem href="/warehouse/requisition" icon={<FaWarehouse size={22} />} label="งานคลัง" />
             <MenuItem href="/master/ar" icon={<FaUserGroup size={22} />} label="ลูกหนี้/เจ้าหนี้" />
